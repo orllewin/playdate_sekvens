@@ -1,0 +1,6 @@
+name=Sekvens
+author=Orllewin
+description=A drum machine that syncs to Pocket Operators
+bundleID=orllewin.playdate.sekvens
+version=1.0.0
+imagePath=Images/
