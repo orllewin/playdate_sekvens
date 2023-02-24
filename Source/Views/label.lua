@@ -43,6 +43,6 @@ function Label:redraw()
 		end
 		
 	playdate.graphics.popContext()
-	self:moveTo(self.origX, self.origY)
+	self:moveTo(self.origX + width/2, self.origY)
 	self:setImage(image)
 end

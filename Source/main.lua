@@ -19,15 +19,16 @@ import 'sequencer'
 GRID_WIDTH = 242
 KNOB_OFFSET = 14
 
-local footerMessage = "Unknown"
+font = playdate.graphics.font.new("Fonts/font-rains-1x")
+playdate.graphics.setFont(font)
 
 playdate.graphics.sprite.setBackgroundDrawingCallback(function(x, y, width, height)
 	playdate.graphics.setColor(playdate.graphics.kColorBlack)
 	playdate.graphics.fillRect(0, 0, 400, 240)
 end)
 
-font = playdate.graphics.font.new("Fonts/font-rains-1x")
-playdate.graphics.setFont(font)
+local headerLabel = Label(4, 8, "XXXXXXXXXXXXXXXXXXXXX", font)
+local footerLabel = Label(4, 232, "XXXXXXXXXXXXXXXXXXXXX", font)
 
 local sequencer = nil
 local grid = nil
@@ -41,13 +42,13 @@ local muteTogggle = MuteToggle(20, 200, GRID_WIDTH + 17, 20, function(track, mut
 		if sequencer ~= nil then 
 			sequencer:setTrackMute(track, muted) 
 			if muted then
-				footerMessage = "" .. track .. ": " .. grid:getTrackName(track) .. " Muted"
+				footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track) .. " Muted")
 			else
-				footerMessage = "" .. track .. ": " .. grid:getTrackName(track) .. " Unmuted"
+				footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track) .. " Unmuted")
 			end
 		end
 	else
-			footerMessage = "" .. track .. ": " .. grid:getTrackName(track)
+			footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track))
 	end
 	
 
@@ -96,14 +97,13 @@ local loopLine = LoopLine(15, 20, GRID_WIDTH-15, 200)
 
 grid = SequencerGrid(GRID_WIDTH, 200, 6, 20, 16, function(track, step , value, sample)
 	print("Track: ".. track .. " step: " .. step .. " value: " .. value)
-	footerMessage = "" .. track .. "," .. step .. ": " .. value .. " " .. sample
+	footerLabel:setText("" .. track .. "," .. step .. ": " .. value .. " " .. sample)
 	if(sequencer ~= nil) then sequencer:updateStep(track, step, value) end
 end)
 
-local samplePackName = "Loading..."
 sequencer = Sequencer("sequencer.json", function(name, tracks)
-	samplePackName = name
-	print("Loaded samplepack: " .. samplePackName .. " containing " .. #tracks .. " tracks")
+	headerLabel:setText(name)
+	print("Loaded samplepack: " .. name .. " containing " .. #tracks .. " tracks")
 	grid:load(tracks)
 	muteTogggle:load(tracks)
 end)
@@ -124,8 +124,6 @@ function playdate.update()
 	end
 	playdate.graphics.sprite.update()
 
-	playdate.graphics.drawText(samplePackName, 3, 4)
-	playdate.graphics.drawText(footerMessage, 2, 228)
 	if sequencer:playing() then
 		loopLine:update(sequencer:getStep())
 	end
