@@ -23,7 +23,7 @@ local syncTrack = sound.track.new()
 local mainChannel = sound.channel.new()
 
 local onePoleFilter = sound.onepolefilter.new()
-local delay = sound.delayline.new(0.25)
+local delay = nil
 
 local sequencerTracks = {}
 local sequence = sound.sequence.new()
@@ -49,11 +49,6 @@ function Sequencer:init(samplepackFile, onInit)
 	onePoleFilter = sound.onepolefilter.new()
 	onePoleFilter:setMix(1.0)
 	mainChannel:addEffect(onePoleFilter)
-	
-	delay = sound.delayline.new(0.25)
-	delay:setFeedback(0.1)
-	delay:setMix(0.0)
-	mainChannel:addEffect(delay)
 	
 	--Load from json
 	if playdate.file.exists(samplepackFile) then
@@ -166,16 +161,30 @@ function Sequencer:setTrackMute(track, isMuted)
 end
 
 function Sequencer:setBPM(bpm)
+	self.bpm = bpm
 	local stepsPerBeat = 4
 	local beatsPerSecond = bpm / 60
 	local stepsPerSecond = stepsPerBeat * beatsPerSecond
 	sequence:setTempo(stepsPerSecond)
 
 	if #syncTrack:getNotes() > 0 then
-		syncTrack:removeNote(1, fracMidiNote)
+		--syncTrack:removeNote(1, fracMidiNote) -- API BUG?
 	end
 	fracMidiNote = self:bpmToFractionalMidiNote(bpm)
 	syncTrack:addNote(1, fracMidiNote, 16)
+	
+	self:resetDelay()
+end
+
+function Sequencer:resetDelay()
+	--todo - calculate delay from bpm, this only works at 60, 120, 240 or whatever
+	-- 120/60 = 2 / 4/ 2
+	if delay ~= nil then mainChannel:removeEffect(delay) end
+	local delayTime = (self.bpm/60) / 4 / 2
+	delay = sound.delayline.new(delayTime)
+	delay:setFeedback(0.1)
+	delay:setMix(0.0)
+	mainChannel:addEffect(delay)
 end
 
 --https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console

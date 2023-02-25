@@ -10,11 +10,17 @@ import 'Views/sequencer_grid'
 import 'Views/mute_toggle'
 import 'Views/rotary_encoder'
 import 'Views/two_part_effect'
-import 'Views/switch'
 import 'Views/divider'
 import 'Views/control_labels'
 import 'Views/loop_line'
+import 'CoracleViews/label_right'
+import 'CoracleViews/label_left'
+import 'CoracleViews/label_centre'
+import 'CoracleViews/divider_vertical'
+import 'Views/mini_slider'
 import 'sequencer'
+
+local graphics <const> = playdate.graphics
 
 GRID_WIDTH = 242
 KNOB_OFFSET = 14
@@ -29,13 +35,12 @@ end)
 
 local headerLabel = Label(4, 8, "XXXXXXXXXXXXXXXXXXXXX", font)
 local footerLabel = Label(4, 232, "XXXXXXXXXXXXXXXXXXXXX", font)
-
 local sequencer = nil
 local grid = nil
 
 local focusManager = FocusManager()
 
-local muteLabel = Label(GRID_WIDTH + 26, 8, "Mute", font)
+local muteLabel = Label(GRID_WIDTH + 12, 8, "Mute", font)
 muteLabel:setOpacity(0.4)
 local muteTogggle = MuteToggle(20, 200, GRID_WIDTH + 17, 20, function(track, muted, userTap)
 	if userTap then
@@ -50,46 +55,26 @@ local muteTogggle = MuteToggle(20, 200, GRID_WIDTH + 17, 20, function(track, mut
 	else
 			footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track))
 	end
-	
-
-	
 end)
 focusManager:addView(muteTogggle, 1)
 focusManager:addView(muteTogggle, 2)
+focusManager:addView(muteTogggle, 3)
 
---Turn the knob to the left, you will cut the highs. Turn the knob to the right, you will cut the lows.
-local filterEffect = TwoPartEffect(font, Vector(305 + KNOB_OFFSET, 8), "Filter", "NULL")
-filterEffect:setAmountLabelRenderValues(-1, 1, true)
-filterEffect:setAmountListener(function(normalised, mapped)
-	if sequencer ~= nil then sequencer:setFilterCutoff(mapped) end
+
+
+--label, x, y, width, value, rangeStart, rangeEnd, showValue, listener)
+local bpmSlider = MiniSlider("BPM", 353, 20, 90, 120, 70, 180, true, function(value) 
+	if sequencer ~= nil then sequencer:setBPM(value) end
 end)
-filterEffect:setTopValue(0.5)
-focusManager:addView(filterEffect:getTopFocusView(), 1)
 
---todo 0 unused, filter is always on
-filterEffect:setMixListener(function(normalised, mapped)
-	
+focusManager:addView(bpmSlider, 1)
+
+local delaySlider = MiniSlider("Dly Mix", 353, 60, 90, 0, 0, 100, true, function(value) 
+	sequencer:setDelayMix(value/100.00)
 end)
-focusManager:addView(filterEffect:getBottomFocusView(), 2)
 
--- End of single pole
+focusManager:addView(delaySlider, 2)
 
-local bpmLabel = Label(360 + KNOB_OFFSET, 8, "BPM", font)
-bpmLabel:setOpacity(0.4)
-local bpmEncoder = RotaryEncoder(360 + KNOB_OFFSET, 38, function(normalised, mapped)	
-	if sequencer ~= nil then sequencer:setBPM(mapped) end
-end, font)
-bpmEncoder:setLabelRenderValues(10, 200, false)--bpm range, render as int
-bpmEncoder:setValue(0.58)
-focusManager:addView(bpmEncoder, 1)
-
---Delay mix
-local mixLabel = Label(360 + KNOB_OFFSET, 83, "Mix", font)
-mixLabel:setOpacity(0.4)
-local mixEncoder = RotaryEncoder(360 + KNOB_OFFSET, 113, function(normalised, mapped)	
-	sequencer:setDelayMix(normalised)
-end, font)
-focusManager:addView(mixEncoder, 2)
 
 local divider = Divider(222)
 local controls = ControlLabels(font)
@@ -100,6 +85,8 @@ grid = SequencerGrid(GRID_WIDTH, 200, 6, 20, 16, function(track, step , value, s
 	footerLabel:setText("" .. track .. "," .. step .. ": " .. value .. " " .. sample)
 	if(sequencer ~= nil) then sequencer:updateStep(track, step, value) end
 end)
+
+DividerVertical(296, 8, 205, 0.4)
 
 sequencer = Sequencer("sequencer.json", function(name, tracks)
 	headerLabel:setText(name)
