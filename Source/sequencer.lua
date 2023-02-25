@@ -225,6 +225,14 @@ function Sequencer:setDelay2Mix(value)
 	delay2:setMix(value)
 end
 
+function Sequencer:setDelay1Feedback(value)	
+	delay1:setFeedback(value)
+end
+
+function Sequencer:setDelay2Feedback(value)	
+	delay2:setFeedback(value)
+end
+
 --lo pass:
 function Sequencer:setLoPassActive(active)
 	if active then
