@@ -188,7 +188,7 @@ function Sequencer:resetDelay()
 	if delay2 ~= nil then mainChannel:removeEffect(delay2) end
 	
 	local delay1Time = (self.bpm/60) / 4
-	local delay2Time = delay1Time * 2
+	local delay2Time = delay1Time * 1.5
 	
 	delay1 = sound.delayline.new(delay1Time)
 	delay1:setFeedback(0.1)

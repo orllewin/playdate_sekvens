@@ -22,18 +22,18 @@
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6]
 		},
 		{
-			"name": "Hi-tom",
-			"file": "Samples/TomHi",
+			"name": "HitA-08",
+			"file": "Samples/HitA-08",
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		},
 		{
-			"name": "Mid-tom",
-			"file": "Samples/TomMid",
+			"name": "HitE-17",
+			"file": "Samples/HitE-17",
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		},
 		{
-			"name": "Low-tom",
-			"file": "Samples/TomLow",
+			"name": "HitD-09",
+			"file": "Samples/HitD-09",
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		},
 		{
