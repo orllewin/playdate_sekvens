@@ -12,6 +12,8 @@
 class('LabelRight').extends(playdate.graphics.sprite)
 
 function LabelRight:init(text, x, y, alpha)
+	LabelRight.super.init(self)
+	
 	self.xx = x
 	self.yy = y
 	

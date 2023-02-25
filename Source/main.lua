@@ -16,6 +16,7 @@ import 'Views/loop_line'
 import 'CoracleViews/label_right'
 import 'CoracleViews/label_left'
 import 'CoracleViews/label_centre'
+import 'CoracleViews/toggle_button'
 import 'CoracleViews/divider_vertical'
 import 'Views/mini_slider'
 import 'sequencer'
@@ -61,19 +62,58 @@ focusManager:addView(muteTogggle, 2)
 focusManager:addView(muteTogggle, 3)
 
 
-
+local fwSliderWidth = 95
+local fwSliderX = 350
+local hwSliderWidth = 40
 --label, x, y, width, value, rangeStart, rangeEnd, showValue, listener)
-local bpmSlider = MiniSlider("BPM", 353, 20, 90, 120, 70, 180, true, function(value) 
+local bpmSlider = MiniSlider("BPM", fwSliderX, 17, fwSliderWidth, 120, 70, 180, 12, true, function(value) 
 	if sequencer ~= nil then sequencer:setBPM(value) end
 end)
 
 focusManager:addView(bpmSlider, 1)
 
-local delaySlider = MiniSlider("Dly Mix", 353, 60, 90, 0, 0, 100, true, function(value) 
+local delaySlider = MiniSlider("Dly Mix", fwSliderX, 50, fwSliderWidth, 0, 0, 100, 12, true, function(value) 
 	sequencer:setDelayMix(value/100.00)
 end)
 
 focusManager:addView(delaySlider, 2)
+
+--label, x, y, width, height, active
+local loPassToggle = ToggleButton("Lo", 325, 85, 40, 30, false, function(active)
+	print("Togoel listenber, setting lo pass to " .. tostring(active))
+	sequencer:setLoPassActive(active)
+end)
+local hiPassToggle = ToggleButton("Hi", 375, 85, 40, 30, false, function(active)
+	print("Togoel listenber, setting hi pass to " .. tostring(active))
+	sequencer:setHiPassActive(active)
+end)
+
+focusManager:addView(loPassToggle, 3)
+focusManager:addView(hiPassToggle, 3)
+
+local loPassSlider = MiniSlider("Low", 325, 117, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setLoPassFrquency(map(value, 0, 100, 2500, 20000))
+end)
+local hiPassSlider = MiniSlider("High", 373, 117, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setHiPassFrquency(map(value, 0, 100, 1400, 44100))
+end)
+
+focusManager:addView(loPassSlider, 4)
+focusManager:addView(hiPassSlider, 4)
+
+local loPassResSlider = MiniSlider("Res", 325, 155, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setLoPassResonance(value/100.0)
+end)
+local hiPassResSlider = MiniSlider("Res", 373, 155, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setHiPassResonance(value/100.0)
+end)
+
+focusManager:addView(loPassResSlider, 5)
+focusManager:addView(hiPassResSlider, 5)
+
+
+
+
 
 
 local divider = Divider(222)
@@ -86,7 +126,7 @@ grid = SequencerGrid(GRID_WIDTH, 200, 6, 20, 16, function(track, step , value, s
 	if(sequencer ~= nil) then sequencer:updateStep(track, step, value) end
 end)
 
-DividerVertical(296, 8, 205, 0.4)
+DividerVertical(292, 22, 190, 0.4)
 
 sequencer = Sequencer("sequencer.json", function(name, tracks)
 	headerLabel:setText(name)

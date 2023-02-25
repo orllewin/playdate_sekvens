@@ -12,6 +12,8 @@
 class('LabelCentre').extends(playdate.graphics.sprite)
 
 function LabelCentre:init(text, x, y, alpha)
+	LabelCentre.super.init(self)
+	
 	self.xx = x
 	self.yy = y
 	

@@ -22,7 +22,8 @@ local syncTrack = sound.track.new()
 
 local mainChannel = sound.channel.new()
 
-local onePoleFilter = sound.onepolefilter.new()
+local loPassFilter = sound.twopolefilter.new("lopass")
+local hiPassFilter = sound.twopolefilter.new("hipass")
 local delay = nil
 
 local sequencerTracks = {}
@@ -45,10 +46,13 @@ function Sequencer:init(samplepackFile, onInit)
 
 	syncTrack:setInstrument(syncInstrument)
 	
-	--https://sdk.play.date/inside-playdate/#C-sound.onepolefilter
-	onePoleFilter = sound.onepolefilter.new()
-	onePoleFilter:setMix(1.0)
-	mainChannel:addEffect(onePoleFilter)
+	mainChannel:addEffect(loPassFilter)
+	loPassFilter:setMix(0)
+	loPassFilter:setFrequency(10000)
+	
+	mainChannel:addEffect(hiPassFilter)
+	hiPassFilter:setMix(0)
+	hiPassFilter:setFrequency(10000)
 	
 	--Load from json
 	if playdate.file.exists(samplepackFile) then
@@ -207,15 +211,46 @@ function Sequencer:setDelayMix(value)
 	delay:setMix(value)
 end
 
---One pole filter:
-function Sequencer:setFilterCutoff(value)
-	print("1 pole param value: " ..  value)
-	onePoleFilter:setParameter(value)
+--lo pass:
+function Sequencer:setLoPassActive(active)
+	if active then
+		print("lopass is active")
+		loPassFilter:setMix(1)
+	else
+		print("lopass is INactive")
+		loPassFilter:setMix(0)
+	end
 end
 
-function Sequencer:setFilterMix(value)
-	onePoleFilter:setMix(value)
+function Sequencer:setLoPassFrquency(freq)
+	print("setLoPassFrquency(): " .. freq)
+	loPassFilter:setFrequency(freq)
 end
+
+function Sequencer:setLoPassResonance(res)
+	print("setLoPassResonance(): " .. res)
+	loPassFilter:setResonance(res)
+end
+
+--hi pass
+function Sequencer:setHiPassActive(active)
+	if active then
+		hiPassFilter:setMix(1)
+	else
+		hiPassFilter:setMix(0)
+	end
+end
+
+function Sequencer:setHiPassFrquency(freq)
+	print("setHiPassFrquency(): " .. freq)
+	hiPassFilter:setFrequency(freq)
+end
+
+function Sequencer:setHiPassResonance(res)
+	print("setHiPassResonance(): " .. res)
+	hiPassFilter:setResonance(res)
+end
+
 
 --Sync
 function Sequencer:isSyncEnabled()

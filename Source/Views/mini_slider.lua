@@ -1,13 +1,14 @@
 class('MiniSlider').extends(playdate.graphics.sprite)
 
 LABEL_HEIGHT = 12
-MSLIDER_HEIGHT = 12
+MSLIDER_HEIGHT = 10
 
-function MiniSlider:init(label, x, y, width, value, rangeStart, rangeEnd, showValue, listener)
+function MiniSlider:init(label, x, y, width, value, rangeStart, rangeEnd, segments, showValue, listener)
 	MiniSlider.super.init(self)
 
 	self.label = label
 	self.value = value
+	self.segments = segments
 	self.showValue = showValue
 	self.xx = x
 	self.yy = y
@@ -26,8 +27,8 @@ function MiniSlider:init(label, x, y, width, value, rangeStart, rangeEnd, showVa
 	playdate.graphics.pushContext(backplateImage)
 	playdate.graphics.setLineWidth(1)
 
-	for i=1,12 do
-		local x = map(i, 1, 12, 0, width)
+	for i=1,self.segments do
+		local x = map(i, 1, self.segments, 0, width)
 		playdate.graphics.drawLine(x, LABEL_HEIGHT, x, MSLIDER_HEIGHT/2 - 2 + LABEL_HEIGHT) 
 		playdate.graphics.drawLine(x, LABEL_HEIGHT + MSLIDER_HEIGHT/2 + 2, x, MSLIDER_HEIGHT + LABEL_HEIGHT) 
 	end	
@@ -40,7 +41,7 @@ function MiniSlider:init(label, x, y, width, value, rangeStart, rangeEnd, showVa
 	self:moveTo(x, y)
 	self:add()
 	
-	self.label = LabelLeft(label, x - width/2, y - MSLIDER_HEIGHT - 3, 0.4)
+	self.label = LabelLeft(label, x - width/2, y - MSLIDER_HEIGHT - 4, 0.4)
 	
 	local knobImage = playdate.graphics.image.new(10, MSLIDER_HEIGHT + 6)
 	playdate.graphics.pushContext(knobImage)
@@ -56,11 +57,11 @@ function MiniSlider:init(label, x, y, width, value, rangeStart, rangeEnd, showVa
 		self.valueLabel = LabelRight("" .. self.value, x - (width/2) + width - 4, y - MSLIDER_HEIGHT - 3) 
 	end
 	
-	local focusedImage = playdate.graphics.image.new(width + 12, MSLIDER_HEIGHT + LABEL_HEIGHT + 16)
+	local focusedImage = playdate.graphics.image.new(width + 12, MSLIDER_HEIGHT + LABEL_HEIGHT + 12)
 	playdate.graphics.pushContext(focusedImage)
 	playdate.graphics.setColor(playdate.graphics.kColorWhite)
 	playdate.graphics.setLineWidth(2)
-	playdate.graphics.drawRoundRect(1, 1, width + 6, MSLIDER_HEIGHT + LABEL_HEIGHT + 14, 5) 
+	playdate.graphics.drawRoundRect(1, 1, width + 6, MSLIDER_HEIGHT + LABEL_HEIGHT + 10, 5) 
 	playdate.graphics.setLineWidth(1)
 	playdate.graphics.popContext()
 	self.focusedSprite = playdate.graphics.sprite.new(focusedImage)
