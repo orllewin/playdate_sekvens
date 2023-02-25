@@ -18,6 +18,7 @@ import 'CoracleViews/label_left'
 import 'CoracleViews/label_centre'
 import 'CoracleViews/toggle_button'
 import 'CoracleViews/divider_vertical'
+import 'CoracleViews/divider_horizontal'
 import 'Views/mini_slider'
 import 'sequencer'
 
@@ -60,11 +61,19 @@ end)
 focusManager:addView(muteTogggle, 1)
 focusManager:addView(muteTogggle, 2)
 focusManager:addView(muteTogggle, 3)
-
+focusManager:addView(muteTogggle, 4)
+focusManager:addView(muteTogggle, 5)
 
 local fwSliderWidth = 95
 local fwSliderX = 350
 local hwSliderWidth = 40
+local hwSliderLeftX = 325
+local hwSliderRightX = 373
+local row2Y = 57
+local row3Y = 93
+local row4Y = 133
+local row5Y = 165
+local row6Y = 200
 --label, x, y, width, value, rangeStart, rangeEnd, showValue, listener)
 local bpmSlider = MiniSlider("BPM", fwSliderX, 17, fwSliderWidth, 120, 70, 180, 12, true, function(value) 
 	if sequencer ~= nil then sequencer:setBPM(value) end
@@ -72,44 +81,66 @@ end)
 
 focusManager:addView(bpmSlider, 1)
 
-local delaySlider = MiniSlider("Dly Mix", fwSliderX, 50, fwSliderWidth, 0, 0, 100, 12, true, function(value) 
-	sequencer:setDelayMix(value/100.00)
+--delays mix
+local delay1Slider = MiniSlider("Dly1", hwSliderLeftX, row2Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setDelay1Mix(value/100.00)
 end)
 
-focusManager:addView(delaySlider, 2)
+local delay2Slider = MiniSlider("Dly2", hwSliderRightX, row2Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setDelay2Mix(value/100.00)
+end)
+
+focusManager:addView(delay1Slider, 2)
+focusManager:addView(delay2Slider, 2)
+
+DividerHorizontal(300, 38, 90, 0.4)
+
+--delays feedback
+local delay1FeedbackSlider = MiniSlider("Fback", hwSliderLeftX, row3Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setDelay1Feedback(value/100.00)
+end)
+
+local delay2FeedbackSlider = MiniSlider("Fback", hwSliderRightX, row3Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setDelay2Feedback(value/100.00)
+end)
+
+focusManager:addView(delay1FeedbackSlider, 3)
+focusManager:addView(delay2FeedbackSlider, 3)
+
+DividerHorizontal(300, 115, 90, 0.4)
 
 --label, x, y, width, height, active
-local loPassToggle = ToggleButton("Lo", 325, 85, 40, 30, false, function(active)
+local loPassToggle = ToggleButton("Lo", 325, row4Y, 40, 30, false, function(active)
 	print("Togoel listenber, setting lo pass to " .. tostring(active))
 	sequencer:setLoPassActive(active)
 end)
-local hiPassToggle = ToggleButton("Hi", 375, 85, 40, 30, false, function(active)
+local hiPassToggle = ToggleButton("Hi", 375, row4Y, 40, 30, false, function(active)
 	print("Togoel listenber, setting hi pass to " .. tostring(active))
 	sequencer:setHiPassActive(active)
 end)
 
-focusManager:addView(loPassToggle, 3)
-focusManager:addView(hiPassToggle, 3)
+focusManager:addView(loPassToggle, 4)
+focusManager:addView(hiPassToggle, 4)
 
-local loPassSlider = MiniSlider("Low", 325, 117, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
-	sequencer:setLoPassFrquency(map(value, 0, 100, 2500, 20000))
+local loPassSlider = MiniSlider("Freq", hwSliderLeftX, row5Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setLoPassFrquency(map(value, 0, 100, 100, 10000))
 end)
-local hiPassSlider = MiniSlider("High", 373, 117, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
-	sequencer:setHiPassFrquency(map(value, 0, 100, 1400, 44100))
+local hiPassSlider = MiniSlider("Freq", hwSliderRightX, row5Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+	sequencer:setHiPassFrquency(map(value, 0, 100, 100, 10000))
 end)
 
-focusManager:addView(loPassSlider, 4)
-focusManager:addView(hiPassSlider, 4)
+focusManager:addView(loPassSlider, 5)
+focusManager:addView(hiPassSlider, 5)
 
-local loPassResSlider = MiniSlider("Res", 325, 155, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+local loPassResSlider = MiniSlider("Res", hwSliderLeftX, row6Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
 	sequencer:setLoPassResonance(value/100.0)
 end)
-local hiPassResSlider = MiniSlider("Res", 373, 155, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
+local hiPassResSlider = MiniSlider("Res", hwSliderRightX, row6Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
 	sequencer:setHiPassResonance(value/100.0)
 end)
 
-focusManager:addView(loPassResSlider, 5)
-focusManager:addView(hiPassResSlider, 5)
+focusManager:addView(loPassResSlider, 6)
+focusManager:addView(hiPassResSlider, 6)
 
 
 

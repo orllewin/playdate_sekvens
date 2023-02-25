@@ -24,7 +24,8 @@ local mainChannel = sound.channel.new()
 
 local loPassFilter = sound.twopolefilter.new("lopass")
 local hiPassFilter = sound.twopolefilter.new("hipass")
-local delay = nil
+local delay1 = nil
+local delay2 = nil
 
 local sequencerTracks = {}
 local sequence = sound.sequence.new()
@@ -52,7 +53,7 @@ function Sequencer:init(samplepackFile, onInit)
 	
 	mainChannel:addEffect(hiPassFilter)
 	hiPassFilter:setMix(0)
-	hiPassFilter:setFrequency(10000)
+	hiPassFilter:setFrequency(150)
 	
 	--Load from json
 	if playdate.file.exists(samplepackFile) then
@@ -183,12 +184,21 @@ end
 function Sequencer:resetDelay()
 	--todo - calculate delay from bpm, this only works at 60, 120, 240 or whatever
 	-- 120/60 = 2 / 4/ 2
-	if delay ~= nil then mainChannel:removeEffect(delay) end
-	local delayTime = (self.bpm/60) / 4 / 2
-	delay = sound.delayline.new(delayTime)
-	delay:setFeedback(0.1)
-	delay:setMix(0.0)
-	mainChannel:addEffect(delay)
+	if delay1 ~= nil then mainChannel:removeEffect(delay1) end
+	if delay2 ~= nil then mainChannel:removeEffect(delay2) end
+	
+	local delay1Time = (self.bpm/60) / 4
+	local delay2Time = delay1Time * 2
+	
+	delay1 = sound.delayline.new(delay1Time)
+	delay1:setFeedback(0.1)
+	delay1:setMix(0.0)
+	mainChannel:addEffect(delay1)
+	
+	delay2 = sound.delayline.new(delay2Time)
+	delay2:setFeedback(0.1)
+	delay2:setMix(0.0)
+	mainChannel:addEffect(delay2)
 end
 
 --https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console
@@ -207,8 +217,12 @@ end
 
 --Effects
 --preset delay mix
-function Sequencer:setDelayMix(value)	
-	delay:setMix(value)
+function Sequencer:setDelay1Mix(value)	
+	delay1:setMix(value)
+end
+
+function Sequencer:setDelay2Mix(value)	
+	delay2:setMix(value)
 end
 
 --lo pass:
