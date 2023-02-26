@@ -26,6 +26,7 @@ local graphics <const> = playdate.graphics
 
 GRID_WIDTH = 242
 KNOB_OFFSET = 14
+SEQ_HEIGHT = 170
 
 font = playdate.graphics.font.new("Fonts/font-rains-1x")
 playdate.graphics.setFont(font)
@@ -44,7 +45,7 @@ local focusManager = FocusManager()
 
 local muteLabel = Label(GRID_WIDTH + 12, 8, "Mute", font)
 muteLabel:setOpacity(0.4)
-local muteTogggle = MuteToggle(20, 200, GRID_WIDTH + 17, 20, function(track, muted, userTap)
+local muteTogggle = MuteToggle(20, SEQ_HEIGHT, GRID_WIDTH + 17, 20, function(track, muted, userTap)
 	if userTap then
 		if sequencer ~= nil then 
 			sequencer:setTrackMute(track, muted) 
@@ -142,19 +143,16 @@ end)
 focusManager:addView(loPassResSlider, 6)
 focusManager:addView(hiPassResSlider, 6)
 
-
-
-
-
-
 local divider = Divider(222)
 local controls = ControlLabels(font)
-local loopLine = LoopLine(15, 20, GRID_WIDTH-15, 200)
+local loopLine = LoopLine(15, 20, GRID_WIDTH-15, SEQ_HEIGHT)
 
-grid = SequencerGrid(GRID_WIDTH, 200, 6, 20, 16, function(track, step , value, sample)
+grid = SequencerGrid(GRID_WIDTH, SEQ_HEIGHT, 6, 20, 16, function(track, step , value, sample)
 	print("Track: ".. track .. " step: " .. step .. " value: " .. value)
 	footerLabel:setText("" .. track .. "," .. step .. ": " .. value .. " " .. sample)
-	if(sequencer ~= nil) then sequencer:updateStep(track, step, value) end
+	if(sequencer ~= nil) then 
+		sequencer:updateStep(track, step, value) 
+	end
 end)
 
 DividerVertical(292, 22, 190, 0.4)

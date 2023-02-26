@@ -93,9 +93,17 @@ function Sequencer:init(samplepackFile, onInit)
 		
 		local seqNoteList = {}
 		
+		local noteLength = 1
+		
 		for i=1,#otrack.pattern do
-			if otrack.pattern[i] > 0 then
-				seqNoteList[#seqNoteList+1] = { note=60, step=i, length=1, velocity=otrack.pattern[i]/10 }
+			if otrack.pattern[i] ~= 0 then
+				if otrack.length ~= nil then noteLength = otrack.length end
+				local velocity = otrack.pattern[i]
+				if velocity == -1 then
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=0.1, velocity=0.1  }
+				else
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=noteLength, velocity=otrack.pattern[i]/10 }
+				end
 			end
 		end
 		
@@ -105,7 +113,8 @@ function Sequencer:init(samplepackFile, onInit)
 			seqTrack = track, 
 			seqSynth = synth, 
 			seqInstrument = instrument, 
-			seqPattern = otrack.pattern 
+			seqPattern = otrack.pattern,
+			seqNoteLength = noteLength
 		}
 	end
 	
@@ -127,6 +136,10 @@ function Sequencer:init(samplepackFile, onInit)
 end
 
 function Sequencer:updateStep(_track, _step, value)
+	if value == -1 then
+		self:markEnd(_track, _step)
+		return
+	end
 	--print("Sequencer:updateStep(): " .. _track .. "," .. _step .. ": " .. value)
 	local notes = sequencerTracks[_track].seqPattern --int array
 	if notes[_step]/10 ~= value then
@@ -136,8 +149,37 @@ function Sequencer:updateStep(_track, _step, value)
 		local seqNoteList = {}
 		
 		for i=1,#notes do
-			if notes[i] > 0 then
-				seqNoteList[#seqNoteList+1] = { note=60, step=i, length=1, velocity=notes[i]/10 }
+			if notes[i] ~= 0 then
+				if notes[i] == -1 then
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=0.1, velocity=0.1 }
+				else
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=sequencerTracks[_track].seqNoteLength, velocity=notes[i]/10 }
+				end
+			end
+		end
+		
+		sequencerTracks[_track].seqTrack:setNotes(seqNoteList)
+	end	
+end
+
+--Stops a sample from playing
+function Sequencer:markEnd(_track, _step)
+	--print("Sequencer:updateStep(): " .. _track .. "," .. _step .. ": " .. value)
+	local notes = sequencerTracks[_track].seqPattern --int array
+	if notes[_step] ~= -1 then
+		notes[_step] = -1
+		sequencerTracks[_track].seqPattern = notes --updated int array
+		
+		local seqNoteList = {}
+		
+		for i=1,#notes do
+			if notes[i] ~= 0 then
+				if notes[i] == -1 then
+					print("Marking terminator")
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=0.1, velocity=0.1 }
+				else
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=sequencerTracks[_track].seqNoteLength, velocity=notes[i]/10 }
+				end
 			end
 		end
 		
@@ -171,19 +213,24 @@ function Sequencer:setBPM(bpm)
 	local beatsPerSecond = bpm / 60
 	local stepsPerSecond = stepsPerBeat * beatsPerSecond
 	sequence:setTempo(stepsPerSecond)
-
-	if #syncTrack:getNotes() > 0 then
+	
+	--This crashes, as does clearNotes(), looks like it was lost from the API somehow:
+	--https://devforum.play.date/t/help-with-changing-notes-in-a-track/8302
+	--[[
+	if #syncNotes > 0 then
 		--syncTrack:removeNote(1, fracMidiNote) -- API BUG?
 	end
+	--]]
 	fracMidiNote = self:bpmToFractionalMidiNote(bpm)
-	syncTrack:addNote(1, fracMidiNote, 16)
+	local syncNote = {step=1, note=fracMidiNote, length=16}
+	local syncNotes = syncTrack:getNotes()
+	syncNotes[1] = syncNote
+	syncTrack:setNotes(syncNotes)
 	
 	self:resetDelay()
 end
 
 function Sequencer:resetDelay()
-	--todo - calculate delay from bpm, this only works at 60, 120, 240 or whatever
-	-- 120/60 = 2 / 4/ 2
 	if delay1 ~= nil then mainChannel:removeEffect(delay1) end
 	if delay2 ~= nil then mainChannel:removeEffect(delay2) end
 	

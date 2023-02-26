@@ -71,7 +71,10 @@ function SequencerGrid:redrawGrid()
 				else
 					--There's method in this madness, rather than just value/10 I'm switching dither pattern based on aesthetics
 					--Reverse order to short-circuit and save some cycles with the most likely values:
-					if value == 10 then
+					if value == -1 then
+						playdate.graphics.setColor(playdate.graphics.kColorWhite)
+						playdate.graphics.fillRect(cX - self.cellWidth/2, cY - self.cellHeight/2, 2, self.cellHeight)
+					elseif value == 10 then
 						playdate.graphics.setDitherPattern(0.0, playdate.graphics.image.kDitherTypeBayer8x8)
 						playdate.graphics.fillRect(cX - self.cellWidth/2, cY - self.cellHeight/2, self.cellWidth, self.cellHeight)
 					elseif value == 9 then
@@ -156,7 +159,7 @@ function SequencerGrid:valueUp()
 end
 
 function SequencerGrid:valueDown()
-	if self.data[self.activeTrack][self.activeStep] > 0 then
+	if self.data[self.activeTrack][self.activeStep] > -1 then
 		self.data[self.activeTrack][self.activeStep] -= 1
 		self:redrawGrid()
 		self:callListener()
