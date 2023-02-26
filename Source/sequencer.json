@@ -1,90 +1,35 @@
 {
 	"name": "Orllewin Sekvens Test Kit",
-  "bpm": 100,
 	"tracks": [
 		{
-			"name": "Analog Pad C1",
-			"file": "Samples/Analog_Pad_C1",
-      "length": 8,
-			"pattern": [5,0,0,0,-1,0,0,0,0,0,0,0,0,0,0,1]
+			"name": "Kick Drum",
+			"file": "Samples/KickDrum",
+			"length": 1,
+			"pattern": [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,2,1]
 		},
 		{
-			"name": "fleenk Temx",
-			"file": "Samples/fleenk_Temx",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"name": "Loop 1",
+			"file": "Samples/loop1",
+			"length": 16,
+			"pattern": [10,0,0,0, -1,0,0,0, 0,0,0,0, 0,0,0,0]
 		},
 		{
-			"name": "Irtiplc 1",
-			"file": "Samples/Irtiplc1",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"name": "Loop 2",
+			"file": "Samples/loop2",
+			"length": 16,
+			"pattern": [0,0,0,0, 10,0,0,0, -1,0,0,0, 0,0,0,0]
 		},
 		{
-			"name": "Irtiplc 2",
-			"file": "Samples/Irtiplc2",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"name": "Loop 3",
+			"file": "Samples/loop3",
+			"length": 16,
+			"pattern": [0,0,0,0, 0,0,0,0, 10,0,0,0, -1,0,0,0]
 		},
 		{
-			"name": "Cfuini3enang",
-			"file": "Samples/Cfuini3enang",
-      "length": 2,
-			"pattern": [0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "HitE-17",
-			"file": "Samples/HitE-17",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "HitD-09",
-			"file": "Samples/HitD-09",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "Clap",
-			"file": "Samples/Clap",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "Rimshot",
-			"file": "Samples/Rimshot",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "Cowbell",
-			"file": "Samples/Cowbell",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "Maraca",
-			"file": "Samples/Maraca",
-      "length": 1,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "neylm0x2",
-			"file": "Samples/neylm0x2",
-      "length": 4,
-			"pattern": [3,-1,2,-1,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "drelat 1",
-			"file": "Samples/drelat1",
-      "length": 3,
-			"pattern": [0,0,0,0,0,0,0,0,4,-1,5,-1,0,3,0,0]
-		},
-		{
-			"name": "drelat 1",
-			"file": "Samples/drelat2",
-      "length": 4,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"name": "Loop 4",
+			"file": "Samples/loop4",
+			"length": 16,
+			"pattern": [-1,0,0,0, 0,0,0,0, 0,0,0,0, 10,0,0,0]
 		}
 	]	
 }
