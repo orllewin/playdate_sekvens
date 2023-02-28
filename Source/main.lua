@@ -11,7 +11,6 @@ import 'Views/mute_toggle'
 import 'Views/rotary_encoder'
 import 'Views/two_part_effect'
 import 'Views/divider'
-import 'Views/control_labels'
 import 'Views/loop_line'
 import 'CoracleViews/label_right'
 import 'CoracleViews/label_left'
@@ -26,7 +25,7 @@ local graphics <const> = playdate.graphics
 
 GRID_WIDTH = 242
 KNOB_OFFSET = 14
-SEQ_HEIGHT = 170
+SEQ_HEIGHT = 200
 
 font = playdate.graphics.font.new("Fonts/font-rains-1x")
 playdate.graphics.setFont(font)
@@ -36,15 +35,24 @@ playdate.graphics.sprite.setBackgroundDrawingCallback(function(x, y, width, heig
 	playdate.graphics.fillRect(0, 0, 400, 240)
 end)
 
-local headerLabel = Label(4, 8, "XXXXXXXXXXXXXXXXXXXXX", font)
+local headerLabel = Label(4, 10, "XXXXXXXXXXXXXXXXXXXXX", font)
 local footerLabel = Label(4, 232, "XXXXXXXXXXXXXXXXXXXXX", font)
+local navLabel = LabelRight("Tk Mute ->", 390, 225)
 local sequencer = nil
 local grid = nil
 
-local focusManager = FocusManager()
+local fxFocusManager = FocusManager()
+local muteFocusManager = FocusManager(function(direction)
+	--onUnhandled left or right
+	if direction == -1 then
+		focusLeftToSequencerGrid()
+	elseif direction == 1 then
+		focusRightToFx()
+	end
+end)
 
-local muteLabel = Label(GRID_WIDTH + 12, 8, "Mute", font)
-muteLabel:setOpacity(0.4)
+local muteLabel = LabelCentre("Mute", GRID_WIDTH + 27, 3)
+muteLabel:setAlpha(0.4)
 local muteTogggle = MuteToggle(20, SEQ_HEIGHT, GRID_WIDTH + 17, 20, function(track, muted, userTap)
 	if userTap then
 		if sequencer ~= nil then 
@@ -59,11 +67,7 @@ local muteTogggle = MuteToggle(20, SEQ_HEIGHT, GRID_WIDTH + 17, 20, function(tra
 			footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track))
 	end
 end)
-focusManager:addView(muteTogggle, 1)
-focusManager:addView(muteTogggle, 2)
-focusManager:addView(muteTogggle, 3)
-focusManager:addView(muteTogggle, 4)
-focusManager:addView(muteTogggle, 5)
+muteFocusManager:addView(muteTogggle, 1)
 
 local fwSliderWidth = 95
 local fwSliderX = 350
@@ -80,7 +84,7 @@ local bpmSlider = MiniSlider("BPM", fwSliderX, 17, fwSliderWidth, 120, 70, 180, 
 	if sequencer ~= nil then sequencer:setBPM(value) end
 end)
 
-focusManager:addView(bpmSlider, 1)
+fxFocusManager:addView(bpmSlider, 1)
 
 --delays mix
 local delay1Slider = MiniSlider("Dly1", hwSliderLeftX, row2Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
@@ -91,8 +95,8 @@ local delay2Slider = MiniSlider("Dly2", hwSliderRightX, row2Y, hwSliderWidth, 0,
 	sequencer:setDelay2Mix(value/100.00)
 end)
 
-focusManager:addView(delay1Slider, 2)
-focusManager:addView(delay2Slider, 2)
+fxFocusManager:addView(delay1Slider, 2)
+fxFocusManager:addView(delay2Slider, 2)
 
 DividerHorizontal(300, 38, 90, 0.4)
 
@@ -105,8 +109,8 @@ local delay2FeedbackSlider = MiniSlider("Fback", hwSliderRightX, row3Y, hwSlider
 	sequencer:setDelay2Feedback(value/100.00)
 end)
 
-focusManager:addView(delay1FeedbackSlider, 3)
-focusManager:addView(delay2FeedbackSlider, 3)
+fxFocusManager:addView(delay1FeedbackSlider, 3)
+fxFocusManager:addView(delay2FeedbackSlider, 3)
 
 DividerHorizontal(300, 115, 90, 0.4)
 
@@ -120,8 +124,8 @@ local hiPassToggle = ToggleButton("Hi", 375, row4Y, 40, 30, false, function(acti
 	sequencer:setHiPassActive(active)
 end)
 
-focusManager:addView(loPassToggle, 4)
-focusManager:addView(hiPassToggle, 4)
+fxFocusManager:addView(loPassToggle, 4)
+fxFocusManager:addView(hiPassToggle, 4)
 
 local loPassSlider = MiniSlider("Freq", hwSliderLeftX, row5Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
 	sequencer:setLoPassFrquency(map(value, 0, 100, 100, 10000))
@@ -130,8 +134,8 @@ local hiPassSlider = MiniSlider("Freq", hwSliderRightX, row5Y, hwSliderWidth, 0,
 	sequencer:setHiPassFrquency(map(value, 0, 100, 100, 10000))
 end)
 
-focusManager:addView(loPassSlider, 5)
-focusManager:addView(hiPassSlider, 5)
+fxFocusManager:addView(loPassSlider, 5)
+fxFocusManager:addView(hiPassSlider, 5)
 
 local loPassResSlider = MiniSlider("Res", hwSliderLeftX, row6Y, hwSliderWidth, 0, 0, 100, 6, false, function(value) 
 	sequencer:setLoPassResonance(value/100.0)
@@ -140,11 +144,10 @@ local hiPassResSlider = MiniSlider("Res", hwSliderRightX, row6Y, hwSliderWidth, 
 	sequencer:setHiPassResonance(value/100.0)
 end)
 
-focusManager:addView(loPassResSlider, 6)
-focusManager:addView(hiPassResSlider, 6)
+fxFocusManager:addView(loPassResSlider, 6)
+fxFocusManager:addView(hiPassResSlider, 6)
 
 local divider = Divider(222)
-local controls = ControlLabels(font)
 local loopLine = LoopLine(15, 20, GRID_WIDTH-15, SEQ_HEIGHT)
 
 grid = SequencerGrid(GRID_WIDTH, SEQ_HEIGHT, 6, 20, 16, function(track, step , value, sample)
@@ -175,8 +178,8 @@ sequencer:play()
 
 function playdate.update()
 	local change = crankChange()
-	if focusManager:isHandlingInput() then
-		focusManager:turnFocusedView(change)
+	if fxFocusManager:isHandlingInput() then
+		fxFocusManager:turnFocusedView(change)
 	end
 	playdate.graphics.sprite.update()
 
@@ -191,20 +194,6 @@ end
 
 function playdate.rightButtonDown()
 	grid:goRight()
-end
-
-function playdate.BButtonDown()
-	if(mutateStep)then
-		grid:toggleValue()
-	else
-		if focusManager:isHandlingInput() then
-			focusManager:unfocus()
-			focusManager:pop()--focus manager now in charge
-		else
-			focusManager:start()
-			focusManager:push()--focus manager now in charge
-		end
-	end
 end
 
 function playdate.upButtonDown()
@@ -224,15 +213,64 @@ function playdate.downButtonDown()
 	
 end
 
-function playdate.AButtonDown()
-	if focusManager:isHandlingInput() then
-		focusManager:tapFocusedView(change)
+--LEFT BUTTON
+function playdate.BButtonDown()
+	if muteFocusManager:isHandlingInput() then
+		muteFocusManager:tapFocusedView(change)
+	elseif fxFocusManager:isHandlingInput() then
+		fxFocusManager:tapFocusedView(change)
 	else
 		mutateStep = true
 	end
+end
+
+--RIGHT BUTTON
+function playdate.AButtonDown()
+	if(mutateStep)then
+		grid:toggleValue()
+	else
+		if(muteFocusManager:isHandlingInput()) then
+			focusRightToFx()
+		elseif fxFocusManager:isHandlingInput() then
+			fxFocusManager:unfocus()
+			fxFocusManager:pop()
+			grid:setFocus(true)
+			navLabel:setText("Tk Mute ->")
+			muteLabel:setAlpha(0.4)
+		else
+			grid:setFocus(false)
+			muteFocusManager:start()
+			muteFocusManager:push()--focus manager now in charge
+			navLabel:setText("Effects ->")
+			muteLabel:setAlpha(1.0)
+		end
+	end
+end
+
+function focusRightToFx()
+	print("focusRightToFx(): YEAYYY")
+	muteFocusManager:unfocus()
+	muteFocusManager:pop()
+	if not fxFocusManager:hasStarted() then fxFocusManager:start() end
+	fxFocusManager:push()--focus manager now in charge
+	fxFocusManager:refocus()
+	navLabel:setText("Seq Grid ->")
+	muteLabel:setAlpha(0.4)
+end
+
+function focusLeftToSequencerGrid()
+	muteFocusManager:unfocus()
+	muteFocusManager:pop()
+	grid:setFocus(true)
+	navLabel:setText("Tk Mute ->")
+	muteLabel:setAlpha(0.4)
 	
 end
 
-function playdate.AButtonUp()
+function playdate.BButtonUp()
 	mutateStep = false
+end
+
+function playdate.AButtonUp()
+	
 end

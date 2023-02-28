@@ -3,22 +3,38 @@ class('FocusManager').extends()
 -- Handles navigation. 
 -- Any view added to this class must have a setFocus(bool)
 -- Views that work with the crank should have a turn(degrees) method
-function FocusManager:init()
+function FocusManager:init(_unhandledListener)
 	FocusManager.super.init(self)
+	
+	if _unhandledListener ~= nil then _unhandledListener(0) end
+	
+	self.unhandledListener = _unhandledListener
+	
+	if self.unhandledListener ~= nil then self.unhandledListener(10) end
 	
 	self.viewMatrix = {}
 	self.activeRow = 1
 	self.activeIndex = 1
 	self.handlingInput = false
+	self.started = false
 end
 
 function FocusManager:start()
 	assert(#self.viewMatrix[1] > 0, "You havn't added any views")
 	self.viewMatrix[1][1]:setFocus(true)
+	self.started = true
+end
+
+function FocusManager:hasStarted()
+	return self.started
 end
 
 function FocusManager:unfocus()
 	self:getFocusedView():setFocus(false)
+end
+
+function FocusManager:refocus()
+	self:getFocusedView():setFocus(true)
 end
 
 function FocusManager:addView(view, row)
@@ -77,6 +93,8 @@ function FocusManager:getInputHandler()
 				self:getFocusedView():setFocus(false)
 				self.activeIndex -= 1
 				self:getFocusedView():setFocus(true)
+			else
+				if self.unhandledListener ~= nil then self.unhandledListener(-1) end
 			end
 		end,
 		rightButtonDown = function()
@@ -84,6 +102,8 @@ function FocusManager:getInputHandler()
 				self:getFocusedView():setFocus(false)
 				self.activeIndex += 1
 				self:getFocusedView():setFocus(true)
+			else
+				if self.unhandledListener ~= nil then self.unhandledListener(1) end
 			end
 		end,
 		upButtonDown = function()

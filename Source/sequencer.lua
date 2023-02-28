@@ -19,6 +19,7 @@ local poSyncSynth = sound.synth.new(playdate.sound.kWaveSquare)
 local syncChannel = sound.channel.new()
 local syncInstrument = sound.instrument.new()
 local syncTrack = sound.track.new()
+local syncNotes = {}
 
 local mainChannel = sound.channel.new()
 
@@ -214,16 +215,13 @@ function Sequencer:setBPM(bpm)
 	local stepsPerSecond = stepsPerBeat * beatsPerSecond
 	sequence:setTempo(stepsPerSecond)
 	
-	--This crashes, as does clearNotes(), looks like it was lost from the API somehow:
-	--https://devforum.play.date/t/help-with-changing-notes-in-a-track/8302
-	--[[
 	if #syncNotes > 0 then
-		--syncTrack:removeNote(1, fracMidiNote) -- API BUG?
+		syncTrack:removeNote(1, fracMidiNote) -- API BUG?
 	end
-	--]]
+
 	fracMidiNote = self:bpmToFractionalMidiNote(bpm)
 	local syncNote = {step=1, note=fracMidiNote, length=16}
-	local syncNotes = syncTrack:getNotes()
+	syncNotes = syncTrack:getNotes()
 	syncNotes[1] = syncNote
 	syncTrack:setNotes(syncNotes)
 	

@@ -44,7 +44,7 @@ function SequencerGrid:load(tracks)
 	local focusImage = playdate.graphics.image.new(self.cellWidth+8, self.cellHeight+8)
 	playdate.graphics.pushContext(focusImage)
 		playdate.graphics.setLineWidth(2)
-		playdate.graphics.drawRect(2, 2, self.cellWidth+4, self.cellHeight+4)
+		playdate.graphics.drawRoundRect(2, 2, self.cellWidth+4, self.cellHeight+4, 5)
 	playdate.graphics.popContext()
 	self.focusSprite = playdate.graphics.sprite.new(focusImage)
 	self.focusSprite:moveTo(self.x - self.w/2 + self.cellWidth/2, self.y - self.h/2 + self.cellHeight/2)
@@ -171,6 +171,11 @@ function SequencerGrid:drawFocused()
 		self.x - self.w/2 + (self.cellWidth * self.activeStep) - self.cellWidth/2, 
 		self.y - self.h/2 + (self.cellHeight * self.activeTrack) - self.cellHeight/2)
 		self:callListener()
+end
+
+function SequencerGrid:setFocus(focus)
+	self.hasFocus = focus
+	self.focusSprite:setVisible(focus)
 end
 
 function SequencerGrid:getTrackName(index)

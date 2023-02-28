@@ -4,5 +4,5 @@ description=A drum machine that syncs to Pocket Operators
 bundleID=orllewin.playdate.sekvens
 version=1.0.0
 imagePath=Images/
-pdxversion=11200
-buildtime=730762529
+pdxversion=11300
+buildtime=730940411

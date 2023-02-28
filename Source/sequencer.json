@@ -1,5 +1,5 @@
 {
-	"name": "Orllewin Sekvens Test Kit",
+	"name": "Looping Test",
 	"tracks": [
 		{
 			"name": "Kick Drum",
@@ -30,6 +30,18 @@
 			"file": "Samples/loop4",
 			"length": 16,
 			"pattern": [-1,0,0,0, 0,0,0,0, 0,0,0,0, 10,0,0,0]
+		},
+		{
+			"name": "Loop 5",
+			"file": "Samples/loop5",
+			"length": 16,
+			"pattern": [10,0,0,0, 0,0,0,0, -1,0,0,0, 0,0,0,0]
+		},
+		{
+			"name": "Loop 6",
+			"file": "Samples/loop6",
+			"length": 16,
+			"pattern": [0,0,0,0, 0,0,0,0, 10,0,0,0, 0,0,0,0]
 		}
 	]	
 }
