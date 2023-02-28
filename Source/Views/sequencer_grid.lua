@@ -114,29 +114,41 @@ end
 function SequencerGrid:goLeft()
 	if self.activeStep > 1 then
 		self.activeStep -= 1
-		self:drawFocused()
+	else
+		self.activeStep = self.steps
 	end
+	
+	self:drawFocused()
 end
 
 function SequencerGrid:goRight()
 	if self.activeStep < self.steps then
 		self.activeStep += 1
-		self:drawFocused()
+	else
+		self.activeStep = 1
 	end
+	
+	self:drawFocused()
 end
 
 function SequencerGrid:goUp()
 	if self.activeTrack > 1 then
 		self.activeTrack -= 1
-		self:drawFocused()
+	else
+		self.activeTrack = #self.data
 	end
+	
+	self:drawFocused()
 end
 
 function SequencerGrid:goDown()
 	if self.activeTrack < #self.data then
 		self.activeTrack += 1
-		self:drawFocused()
+	else
+		self.activeTrack = 1
 	end
+	
+	self:drawFocused()
 end
 
 function SequencerGrid:toggleValue()

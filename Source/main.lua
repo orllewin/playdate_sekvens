@@ -26,6 +26,7 @@ local graphics <const> = playdate.graphics
 GRID_WIDTH = 242
 KNOB_OFFSET = 14
 SEQ_HEIGHT = 200
+SEQ_MUTATE_LABEL = "B+Up/Down"
 
 font = playdate.graphics.font.new("Fonts/font-rains-1x")
 playdate.graphics.setFont(font)
@@ -38,10 +39,18 @@ end)
 local headerLabel = Label(4, 10, "XXXXXXXXXXXXXXXXXXXXX", font)
 local footerLabel = Label(4, 232, "XXXXXXXXXXXXXXXXXXXXX", font)
 local navLabel = LabelRight("Tk Mute ->", 390, 225)
+local mutateLabel = LabelRight(SEQ_MUTATE_LABEL, 290, 225)
 local sequencer = nil
 local grid = nil
 
-local fxFocusManager = FocusManager()
+local fxFocusManager = FocusManager(function(direction)
+		--onUnhandled left or right
+		if direction == -1 then
+			focusLeftToMute()
+		elseif direction == 1 then
+			focusWrapToGrid()
+		end
+	end)
 local muteFocusManager = FocusManager(function(direction)
 	--onUnhandled left or right
 	if direction == -1 then
@@ -232,23 +241,28 @@ function playdate.AButtonDown()
 		if(muteFocusManager:isHandlingInput()) then
 			focusRightToFx()
 		elseif fxFocusManager:isHandlingInput() then
-			fxFocusManager:unfocus()
-			fxFocusManager:pop()
-			grid:setFocus(true)
-			navLabel:setText("Tk Mute ->")
-			muteLabel:setAlpha(0.4)
+			focusWrapToGrid()
 		else
 			grid:setFocus(false)
 			muteFocusManager:start()
 			muteFocusManager:push()--focus manager now in charge
 			navLabel:setText("Effects ->")
+			mutateLabel:setText(" ")
 			muteLabel:setAlpha(1.0)
 		end
 	end
 end
 
+function focusWrapToGrid()
+	fxFocusManager:unfocus()
+	fxFocusManager:pop()
+	grid:setFocus(true)
+	navLabel:setText("Tk Mute ->")
+	muteLabel:setAlpha(0.4)
+	mutateLabel:setText(SEQ_MUTATE_LABEL)
+end
+
 function focusRightToFx()
-	print("focusRightToFx(): YEAYYY")
 	muteFocusManager:unfocus()
 	muteFocusManager:pop()
 	if not fxFocusManager:hasStarted() then fxFocusManager:start() end
@@ -256,6 +270,17 @@ function focusRightToFx()
 	fxFocusManager:refocus()
 	navLabel:setText("Seq Grid ->")
 	muteLabel:setAlpha(0.4)
+	mutateLabel:setText(" ")
+end
+
+function focusLeftToMute()
+	fxFocusManager:unfocus()
+	fxFocusManager:pop()
+	muteFocusManager:start()
+	muteFocusManager:push()--focus manager now in charge
+	navLabel:setText("Effects ->")
+	mutateLabel:setText(" ")
+	muteLabel:setAlpha(1.0)
 end
 
 function focusLeftToSequencerGrid()
@@ -264,7 +289,7 @@ function focusLeftToSequencerGrid()
 	grid:setFocus(true)
 	navLabel:setText("Tk Mute ->")
 	muteLabel:setAlpha(0.4)
-	
+	mutateLabel:setText(SEQ_MUTATE_LABEL)
 end
 
 function playdate.BButtonUp()
