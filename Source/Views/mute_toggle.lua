@@ -12,7 +12,6 @@ function MuteToggle:init(w, h, x, y, onChange)
 	self.trackNames = {}
 	
 	self.activeTrack = 1
-	self.activeStep = 1
 
 	local gridImage = playdate.graphics.image.new(w, h)
 	self:setImage(gridImage)
@@ -90,7 +89,7 @@ end
 
 function MuteToggle:drawFocused()
 	self.focusSprite:moveTo(
-		self.x - self.w/2 + (self.cellWidth * self.activeStep) - self.cellWidth/2, 
+		self.x - self.w/2 + (self.cellWidth) - self.cellWidth/2, 
 		self.y - self.h/2 + (self.cellHeight * self.activeTrack) - self.cellHeight/2)
 	self.onChange(self.activeTrack, self.tracksMuted[self.activeTrack], false)
 end

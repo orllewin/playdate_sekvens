@@ -84,6 +84,10 @@ function TrackRecordButtons:goDown()
 	self:drawFocused()
 end
 
+function TrackRecordButtons: getCurrentTrack()
+	return self.activeTrack
+end
+
 function TrackRecordButtons:drawFocused()
 	self.focusSprite:moveTo(
 		self.x - self.w/2 + (self.cellWidth * self.activeStep) - self.cellWidth/2, 

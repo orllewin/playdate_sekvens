@@ -214,6 +214,11 @@ function Sequencer:play()
 
 end
 
+function Sequencer:stop()
+	print("stop()")
+	sequence:stop()
+end
+
 function Sequencer:setTrackMute(track, isMuted)
 	sequence:getTrackAtIndex(track):setMuted(isMuted)
 end

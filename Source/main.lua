@@ -1,5 +1,6 @@
 import 'CoreLibs/sprites'
 import 'CoreLibs/graphics'
+import 'CoreLibs/timer'
 import 'Coracle/coracle'
 import 'Coracle/math'
 import 'Coracle/string_utils'
@@ -19,6 +20,7 @@ import 'CoracleViews/toggle_button'
 import 'CoracleViews/divider_vertical'
 import 'CoracleViews/divider_horizontal'
 import 'Views/mini_slider'
+import 'Record/record_dialog'
 import 'sequencer'
 
 local graphics <const> = playdate.graphics
@@ -49,9 +51,10 @@ local fxFocusManager = FocusManager(function(direction)
 		if direction == -1 then
 			focusLeftToMute()
 		elseif direction == 1 then
-			focusWrapToGrid()
+			focusWrapToRec()
 		end
 	end)
+	
 local muteFocusManager = FocusManager(function(direction)
 	--onUnhandled left or right
 	if direction == -1 then
@@ -60,23 +63,27 @@ local muteFocusManager = FocusManager(function(direction)
 		focusRightToFx()
 	end
 end)
+
+-- Record
+local recordDialog = RecordDialog()
 local recFocusManager = FocusManager(function(direction)
 	--onUnhandled left or right
 	if direction == -1 then
-		--focusLeftToSequencerGrid()
+		focusLeftToFx()
 	elseif direction == 1 then
-		--focusRightToFx()
+		focusRightToSequencerGrid()
 	end
 end)
 
 local trackRecordButtons = TrackRecordButtons(20, SEQ_HEIGHT, 3, 18, function(track, muted, userTap)
 	if userTap then
-		--todo - show record popup
+		-- NOOP
 	else
-			footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track))
+		footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track))
 	end
 end)
 recFocusManager:addView(trackRecordButtons, 1)
+-- Record end
 
 local muteLabel = LabelCentre("Mute", GRID_WIDTH + 27, 3)
 muteLabel:setAlpha(0.4)
@@ -213,15 +220,13 @@ function playdate.update()
 	if sequencer:playing() then
 		loopLine:update(sequencer:getStep())
 	end
+	
+	playdate.timer.updateTimers()
 end
 
-function playdate.leftButtonDown()
-	grid:goLeft()
-end
 
-function playdate.rightButtonDown()
-	grid:goRight()
-end
+function playdate.leftButtonDown() grid:goLeft() end
+function playdate.rightButtonDown() grid:goRight() end
 
 function playdate.upButtonDown()
 	if(mutateStep)then
@@ -237,7 +242,6 @@ function playdate.downButtonDown()
 	else
 		grid:goDown()
 	end
-	
 end
 
 --LEFT BUTTON
@@ -246,6 +250,8 @@ function playdate.BButtonDown()
 		muteFocusManager:tapFocusedView(change)
 	elseif fxFocusManager:isHandlingInput() then
 		fxFocusManager:tapFocusedView(change)
+	elseif recFocusManager:isHandlingInput() then
+		showRecordDialog()
 	else
 		mutateStep = true
 	end
@@ -282,12 +288,24 @@ function focusWrapToRec()
 end
 
 function focusWrapToGrid()
+	print("focusWrapToGrid()")
 	recFocusManager:unfocus()
 	recFocusManager:pop()
 	grid:setFocus(true)
 	navLabel:setText("Tk Mute ->")
 	muteLabel:setAlpha(0.4)
 	mutateLabel:setText(SEQ_MUTATE_LABEL)
+end
+
+function focusLeftToFx()
+	recFocusManager:unfocus()
+	recFocusManager:pop()
+	if not fxFocusManager:hasStarted() then fxFocusManager:start() end
+	fxFocusManager:push()--focus manager now in charge
+	fxFocusManager:refocus()
+	navLabel:setText("Track rec. ->")
+	muteLabel:setAlpha(0.4)
+	mutateLabel:setText(" ")
 end
 
 function focusRightToFx()
@@ -320,10 +338,24 @@ function focusLeftToSequencerGrid()
 	mutateLabel:setText(SEQ_MUTATE_LABEL)
 end
 
+function focusRightToSequencerGrid()
+	recFocusManager:unfocus()
+	recFocusManager:pop()
+	grid:setFocus(true)
+	navLabel:setText("Tk Mute ->")
+	muteLabel:setAlpha(0.4)
+	mutateLabel:setText(SEQ_MUTATE_LABEL)
+end
+
 function playdate.BButtonUp()
 	mutateStep = false
 end
 
 function playdate.AButtonUp()
 	
+end
+
+function showRecordDialog()
+	sequencer:stop()
+	recordDialog:show(trackRecordButtons:getCurrentTrack())
 end
