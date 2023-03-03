@@ -72,18 +72,6 @@
 			"file": "Samples/neylm0x2",
       "length": 2,
 			"pattern": [0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "Mid-conga",
-			"file": "Samples/CongaMid",
-      "length": 1,
-			"pattern": [0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0]
-		},
-		{
-			"name": "Low-conga",
-			"file": "Samples/CongaLow",
-      "length": 1,
-			"pattern": [0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		}
 	]	
 }

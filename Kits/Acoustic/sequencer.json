@@ -1,10 +1,9 @@
 {
-	"name": "Orllewin Sekvens Acoustic Kit",
+	"name": "Orllewin Sekvens Test Kit",
 	"tracks": [
 		{
 			"name": "Kick 01",
 			"file": "Samples/kick1",
-			"length": 16,
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		},
 		{
@@ -65,26 +64,22 @@
 		{
 			"name": "symb 01",
 			"file": "Samples/symb1",
-			"length": 8,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"pattern": [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]
 		},
 		{
 			"name": "symb 01",
 			"file": "Samples/symb2",
-			"length": 8,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,6,5,2,3]
 		},
     {
 			"name": "hat close 01",
 			"file": "Samples/hat_close1",
-			"length": 2,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"pattern": [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]
 		},
 		{
 			"name": "hat close 02",
 			"file": "Samples/hat_close2",
-			"length": 2,
-			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,6,5,2,3]
 		}
 	]	
 }

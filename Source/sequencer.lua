@@ -29,6 +29,7 @@ local delay1 = nil
 local delay2 = nil
 
 local sequencerTracks = {}
+local noteLengths = {}
 local sequence = sound.sequence.new()
 
 function Sequencer:init(samplepackFile, onInit)
@@ -80,7 +81,7 @@ function Sequencer:init(samplepackFile, onInit)
 	for t=1,#samplepack.tracks do
 		local otrack = samplepack.tracks[t]
 		local sample = sound.sample.new(otrack.file)
-		
+		print("Loading sample: " .. otrack.file)
 		local synth = sound.synth.new(sample)
 		mainChannel:addSource(synth)
 		synth:setVolume(1)
@@ -91,6 +92,13 @@ function Sequencer:init(samplepackFile, onInit)
 		
 		local track = sound.track.new()
 		track:setInstrument(instrument)
+		
+		if otrack.length ~= nil then
+			noteLengths[t] = otrack.length
+		else
+			noteLengths[t] = 1
+		end
+		
 		
 		local seqNoteList = {}
 		
@@ -103,7 +111,7 @@ function Sequencer:init(samplepackFile, onInit)
 				if velocity == -1 then
 					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=0.1, velocity=0.1  }
 				else
-					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=noteLength, velocity=otrack.pattern[i]/10 }
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=noteLengths[t], velocity=otrack.pattern[i]/10 }
 				end
 			end
 		end
@@ -154,7 +162,9 @@ function Sequencer:updateStep(_track, _step, value)
 				if notes[i] == -1 then
 					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=0.1, velocity=0.1 }
 				else
-					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=sequencerTracks[_track].seqNoteLength, velocity=notes[i]/10 }
+					local noteLength = noteLengths[_track]
+					print("Note length for track " .. _track .. " is " .. noteLength)
+					seqNoteList[#seqNoteList+1] = { note=60, step=i, length=noteLength, velocity=notes[i]/10 }
 				end
 			end
 		end

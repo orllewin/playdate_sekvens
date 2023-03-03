@@ -8,7 +8,8 @@ function MuteToggle:init(w, h, x, y, onChange)
 	self.steps = 1
 	self.onChange = onChange
 	
-	self.tracks = {}
+	self.tracksMuted = {}
+	self.trackNames = {}
 	
 	self.activeTrack = 1
 	self.activeStep = 1
@@ -20,21 +21,10 @@ function MuteToggle:init(w, h, x, y, onChange)
 end
 
 function MuteToggle:load(tracks)
-	--self.data[self.activeTrack][self.activeStep] = 0
-	self.data = {}
-	self.trackNames = {}
 	
-	--for each sample/track
 	for r=1,#tracks do
-		local track = tracks[r]
-		local pattern = track.pattern
-		local values = {}
-		for v=1, #pattern do
-			values[v] = pattern[v]
-		end
-		table.insert(self.data, values)--todo - can we just use index here?
-		table.insert(self.trackNames, tracks[r].name)--todo - can we just use index here?
-		self.tracks[r] = false
+		self.trackNames[r] = tracks[r].name
+		self.tracksMuted[r] = false
 	end
 	
 	self.cellWidth = self.w/self.steps
@@ -61,14 +51,12 @@ function MuteToggle:redrawGrid()
 	local vMargin = self.cellHeight/2
 	playdate.graphics.pushContext(self:getImage())
 		playdate.graphics.clear(playdate.graphics.kColorBlack)
-		for row = 1, #self.data do
-			for column = 1, self.steps do
-				local cX = hMargin + (column - 1) * self.cellWidth
+		for row = 1, #self.tracksMuted do
+				local cX = hMargin + (0) * self.cellWidth
 				local cY = vMargin + (row - 1) * self.cellHeight
-				
-				local value = self.data[row][column]
+
 				playdate.graphics.setColor(playdate.graphics.kColorWhite)
-				if(self.tracks[row] == false)then
+				if(self.tracksMuted[row] == false)then
 					--NOT muted
 					playdate.graphics.setDitherPattern(0.8, playdate.graphics.image.kDitherTypeScreen)
 					playdate.graphics.fillRect(cX - (self.cellWidth/2) + 2 , cY - (self.cellHeight/2) + 2, self.cellWidth-4, self.cellHeight-4)
@@ -77,7 +65,6 @@ function MuteToggle:redrawGrid()
 					playdate.graphics.setColor(playdate.graphics.kColorWhite)
 					playdate.graphics.fillRect(cX - (self.cellWidth/2) + 2 , cY - (self.cellHeight/2) + 2, self.cellWidth-4, self.cellHeight-4)
 				end
-			end
 		end
 	playdate.graphics.popContext()
 end
@@ -86,14 +73,14 @@ function MuteToggle:goUp()
 	if self.activeTrack > 1 then
 		self.activeTrack -= 1
 	else
-		self.activeTrack = #self.data
+		self.activeTrack = #self.tracksMuted
 	end	
 	self:drawFocused()
 
 end
 
 function MuteToggle:goDown()
-	if self.activeTrack < #self.data then
+	if self.activeTrack < #self.tracksMuted then
 		self.activeTrack += 1
 	else
 		self.activeTrack = 1
@@ -105,13 +92,13 @@ function MuteToggle:drawFocused()
 	self.focusSprite:moveTo(
 		self.x - self.w/2 + (self.cellWidth * self.activeStep) - self.cellWidth/2, 
 		self.y - self.h/2 + (self.cellHeight * self.activeTrack) - self.cellHeight/2)
-	self.onChange(self.activeTrack, self.tracks[self.activeTrack], false)
+	self.onChange(self.activeTrack, self.tracksMuted[self.activeTrack], false)
 end
 
 function MuteToggle:tap()
-	self.tracks[self.activeTrack] = not self.tracks[self.activeTrack]
+	self.tracksMuted[self.activeTrack] = not self.tracksMuted[self.activeTrack]
 	self:redrawGrid()
-	self.onChange(self.activeTrack, self.tracks[self.activeTrack], true)
+	self.onChange(self.activeTrack, self.tracksMuted[self.activeTrack], true)
 end
 
 function MuteToggle:canGoDown()

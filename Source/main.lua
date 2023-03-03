@@ -27,6 +27,7 @@ GRID_WIDTH = 242
 KNOB_OFFSET = 14
 SEQ_HEIGHT = 200
 SEQ_MUTATE_LABEL = "B+Up/Down"
+MUTE_MUTATE_LABEL = "Mute/Unmute"
 
 font = playdate.graphics.font.new("Fonts/font-rains-1x")
 playdate.graphics.setFont(font)
@@ -178,6 +179,13 @@ end)
 
 -- Menus
 local menu = playdate.getSystemMenu()
+local sampleRecordMenuItem, error = menu:addCheckmarkMenuItem("Sample Rec.", false, function(value)
+	if value == true then
+		--todo show record column
+	else
+		--todo hide record column
+	end
+end)
 local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("PO-Sync", false, function(value)
 		print("Po-Sync enabled: ", value)
 		if sequencer ~= nil then sequencer:poSyncActive(value) end
@@ -247,7 +255,7 @@ function playdate.AButtonDown()
 			muteFocusManager:start()
 			muteFocusManager:push()--focus manager now in charge
 			navLabel:setText("Effects ->")
-			mutateLabel:setText(" ")
+			mutateLabel:setText(MUTE_MUTATE_LABEL)
 			muteLabel:setAlpha(1.0)
 		end
 	end
@@ -279,7 +287,7 @@ function focusLeftToMute()
 	muteFocusManager:start()
 	muteFocusManager:push()--focus manager now in charge
 	navLabel:setText("Effects ->")
-	mutateLabel:setText(" ")
+	mutateLabel:setText(MUTE_MUTATE_LABEL)
 	muteLabel:setAlpha(1.0)
 end
 
