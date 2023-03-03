@@ -196,13 +196,6 @@ end)
 
 -- Menus
 local menu = playdate.getSystemMenu()
-local sampleRecordMenuItem, error = menu:addCheckmarkMenuItem("Sample Rec.", false, function(value)
-	if value == true then
-		--todo show record column
-	else
-		--todo hide record column
-	end
-end)
 local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("PO-Sync", false, function(value)
 		print("Po-Sync enabled: ", value)
 		if sequencer ~= nil then sequencer:poSyncActive(value) end
