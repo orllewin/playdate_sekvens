@@ -8,9 +8,9 @@ import 'Views/focus_manager'
 import 'Views/label'
 import 'Views/sequencer_grid'
 import 'Views/mute_toggle'
+import 'Views/track_record_buttons'
 import 'Views/rotary_encoder'
 import 'Views/two_part_effect'
-import 'Views/divider'
 import 'Views/loop_line'
 import 'CoracleViews/label_right'
 import 'CoracleViews/label_left'
@@ -60,6 +60,23 @@ local muteFocusManager = FocusManager(function(direction)
 		focusRightToFx()
 	end
 end)
+local recFocusManager = FocusManager(function(direction)
+	--onUnhandled left or right
+	if direction == -1 then
+		--focusLeftToSequencerGrid()
+	elseif direction == 1 then
+		--focusRightToFx()
+	end
+end)
+
+local trackRecordButtons = TrackRecordButtons(20, SEQ_HEIGHT, 3, 18, function(track, muted, userTap)
+	if userTap then
+		--todo - show record popup
+	else
+			footerLabel:setText("" .. track .. ": " .. grid:getTrackName(track))
+	end
+end)
+recFocusManager:addView(trackRecordButtons, 1)
 
 local muteLabel = LabelCentre("Mute", GRID_WIDTH + 27, 3)
 muteLabel:setAlpha(0.4)
@@ -157,10 +174,9 @@ end)
 fxFocusManager:addView(loPassResSlider, 6)
 fxFocusManager:addView(hiPassResSlider, 6)
 
-local divider = Divider(222)
 local loopLine = LoopLine(15, 20, GRID_WIDTH-15, SEQ_HEIGHT)
 
-grid = SequencerGrid(GRID_WIDTH, SEQ_HEIGHT, 6, 20, 16, function(track, step , value, sample)
+grid = SequencerGrid(GRID_WIDTH - 20, SEQ_HEIGHT, 26, 20, 16, function(track, step , value, sample)
 	print("Track: ".. track .. " step: " .. step .. " value: " .. value)
 	footerLabel:setText("" .. track .. "," .. step .. ": " .. value .. " " .. sample)
 	if(sequencer ~= nil) then 
@@ -175,6 +191,7 @@ sequencer = Sequencer("sequencer.json", function(name, tracks)
 	print("Loaded samplepack: " .. name .. " containing " .. #tracks .. " tracks")
 	grid:load(tracks)
 	muteTogggle:load(tracks)
+	trackRecordButtons:load(tracks)
 end)
 
 -- Menus
@@ -246,10 +263,12 @@ function playdate.AButtonDown()
 	if(mutateStep)then
 		grid:toggleValue()
 	else
-		if(muteFocusManager:isHandlingInput()) then
+		if recFocusManager:isHandlingInput() then
+			focusWrapToGrid()
+		elseif(muteFocusManager:isHandlingInput()) then
 			focusRightToFx()
 		elseif fxFocusManager:isHandlingInput() then
-			focusWrapToGrid()
+			focusWrapToRec()
 		else
 			grid:setFocus(false)
 			muteFocusManager:start()
@@ -261,9 +280,17 @@ function playdate.AButtonDown()
 	end
 end
 
-function focusWrapToGrid()
+function focusWrapToRec()
 	fxFocusManager:unfocus()
 	fxFocusManager:pop()
+	recFocusManager:start()
+	recFocusManager:push()--focus manager now in charge
+	navLabel:setText("Seq Grid ->")
+end
+
+function focusWrapToGrid()
+	recFocusManager:unfocus()
+	recFocusManager:pop()
 	grid:setFocus(true)
 	navLabel:setText("Tk Mute ->")
 	muteLabel:setAlpha(0.4)
@@ -276,7 +303,7 @@ function focusRightToFx()
 	if not fxFocusManager:hasStarted() then fxFocusManager:start() end
 	fxFocusManager:push()--focus manager now in charge
 	fxFocusManager:refocus()
-	navLabel:setText("Seq Grid ->")
+	navLabel:setText("Track rec. ->")
 	muteLabel:setAlpha(0.4)
 	mutateLabel:setText(" ")
 end

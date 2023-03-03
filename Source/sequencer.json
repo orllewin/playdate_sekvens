@@ -85,6 +85,24 @@
 			"file": "Samples/hat_close2",
 			"length": 2,
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+		},
+		{
+			"name": "120 Loop 1",
+			"file": "Samples/120loop1",
+			"length": 16,
+			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+		},
+		{
+			"name": "120 Loop 2",
+			"file": "Samples/120loop3",
+			"length": 16,
+			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+		},
+		{
+			"name": "120 Loop 3",
+			"file": "Samples/120loop3",
+			"length": 16,
+			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		}
 	]	
 }
