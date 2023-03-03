@@ -38,11 +38,17 @@ function RecordDialog:show(track)
 	self.verticalDiv = DividerVertical(DIV_X, 20, 200, 0.4)
 	self:addDialogSprite(self.verticalDiv)
 	
+	
+	self.bLabel = LabelRight("Dismiss", 290, 225)
+	self:addDialogSprite(self.bLabel)
+	self.aLabel = LabelRight("Sample ->", 390, 225)
+	self:addDialogSprite(self.aLabel)
+	
 	--right items
 	self.selectLabel = LabelLeft("Select Sample", SAMPLE_SELECT_LABEL_X, 20)
 	self:addDialogSprite(self.selectLabel)
 	
-	self.sampleList = TextList(playdate.file.listFiles("SamplesDefault/" .. categories[1]), SAMPLE_X, 38, 120, 200, function(index, text)
+	self.sampleList = TextList(playdate.file.listFiles("SamplesDefault/" .. categories[1]), SAMPLE_X, 38, 120, 190, function(index, text)
 		print("Sample selected, index: " .. index .. " (" .. text .. ")")
 		self:playSample("SamplesDefault/" .. selectedCategory .. "/" .. text)
 	end)
@@ -147,7 +153,11 @@ function RecordDialog:getInputHandler()
 			self:dismiss()
 		end,
 		AButtonDown = function()
-			if self.recordPreviewButton:isFocused() then
+			if self.categoryList:isFocused() then
+				self.categoryList:setFocus(false)
+				self.sampleList:setFocus(true)
+				self.aLabel:setText("Select")
+			elseif self.recordPreviewButton:isFocused() then
 				self.recordPreviewButton:tap()
 			elseif self.recordSaveButton:isFocused() then
 				self.recordSaveButton:tap()
@@ -190,6 +200,7 @@ function RecordDialog:getInputHandler()
 			elseif self.categoryList:isFocused() then
 				self.categoryList:setFocus(false)
 				self.sampleList:setFocus(true)
+				self.aLabel:setText("Select")
 			elseif self.sampleList:isFocused() then
 					self.sampleList:emitSelected()
 			end
