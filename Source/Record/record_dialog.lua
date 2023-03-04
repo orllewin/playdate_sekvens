@@ -172,6 +172,7 @@ function RecordDialog:getInputHandler()
 				self.recordPushButton:setFocus(false)
 				self.recordPreviewButton:setFocus(true)
 				self:stopRecording()
+				self.aLabel:setText("Preview")
 			end
 		end,
 		leftButtonDown = function()
@@ -181,22 +182,26 @@ function RecordDialog:getInputHandler()
 			elseif self.sampleList:isFocused() then
 				self.sampleList:setFocus(false)
 				self.categoryList:setFocus(true)
+				self.aLabel:setText("Sample ->")
 			elseif self.categoryList:isFocused() then
 				self.recordNewLabel:setAlpha(1.0)
 				self.selectLabel:setAlpha(0.4)
 				self.categoryList:setFocus(false)
 				self.recordPushButton:setFocus(true)
+				self.aLabel:setText("Record")
 			end
 		end,
 		rightButtonDown = function()
-			if self.recordPreviewButton then
+			if self.recordPreviewButton:isFocused() then
 				self.recordSaveButton:setFocus(true)
 				self.recordPreviewButton:setFocus(false)
+				self.aLabel:setText("Save")
 			elseif self.recordPushButton:isFocused() then
 				self.categoryList:setFocus(true)
 				self.recordPushButton:setFocus(false)
 				self.recordNewLabel:setAlpha(0.4)
 				self.selectLabel:setAlpha(1.0)
+				self.aLabel:setText("Sample ->")
 			elseif self.categoryList:isFocused() then
 				self.categoryList:setFocus(false)
 				self.sampleList:setFocus(true)

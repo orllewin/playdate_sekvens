@@ -285,6 +285,7 @@ function focusWrapToRec()
 	recFocusManager:start()
 	recFocusManager:push()--focus manager now in charge
 	navLabel:setText("Seq Grid ->")
+	mutateLabel:setText("Sample Edit")
 end
 
 function focusWrapToGrid()
