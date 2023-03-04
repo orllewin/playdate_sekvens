@@ -25,6 +25,8 @@ import 'sequencer'
 
 local graphics <const> = playdate.graphics
 
+playdate.setMenuImage(playdate.graphics.image.new("Images/playdate_test_card"), 100)
+
 GRID_WIDTH = 242
 KNOB_OFFSET = 14
 SEQ_HEIGHT = 200
@@ -203,10 +205,13 @@ end)
 
 -- Menus
 local menu = playdate.getSystemMenu()
-local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("PO-Sync", false, function(value)
-		print("Po-Sync enabled: ", value)
-		if sequencer ~= nil then sequencer:poSyncActive(value) end
+local patchMenuItem, error = menu:addOptionsMenuItem("Patch:", {"New", "Open", "Save"}, "Save", function(value)
+	if error ~= nil then print(error) end
 end)
+-- local checkmarkMenuItem, error = menu:addCheckmarkMenuItem("PO-Sync", false, function(value)
+-- 		print("Po-Sync enabled: ", value)
+-- 		if sequencer ~= nil then sequencer:poSyncActive(value) end
+-- end)
 
 sequencer:play()
 
