@@ -11,6 +11,7 @@ local filename = "rec-"
 local recordSprites = {}
 local categories = {"Claps", "Cymbals","FX","Hats","Kicks","Perc","Snares","Toms"}
 local selectedCategory = "Claps"
+local selectedSample = ""
 
 local DIV_X = 190
 local SAMPLE_SELECT_LABEL_X = 200
@@ -52,8 +53,9 @@ function RecordDialog:show(track, onSampleSelected)
 	self:addDialogSprite(self.selectLabel)
 	
 	self.sampleList = TextList(playdate.file.listFiles("SamplesDefault/" .. categories[1]), SAMPLE_X, 38, 120, 190, function(index, text)
-		print("Sample selected, index: " .. index .. " (" .. text .. ")")
-		self:playSample("SamplesDefault/" .. selectedCategory .. "/" .. text)
+		selectedSample = text
+		print("Sample selected, index: " .. index .. " (" .. selectedSample .. ")")
+		self:playSample("SamplesDefault/" .. selectedCategory .. "/" .. selectedSample)
 	end)
 	self.sampleList:setFocus(false)
 	
@@ -172,6 +174,9 @@ function RecordDialog:getInputHandler()
 			elseif self.recordPushButton:isFocused() then
 				self:startRecording()
 				self.recordPushButton:setOn()	
+			elseif self.sampleList:isFocused() then
+				local selectedSample = "SamplesDefault/" .. selectedCategory .. "/" .. selectedSample
+				if self.onSampleSelected ~= nil then self.onSampleSelected(self.track, selectedSample) end
 			end
 		end,
 		AButtonUp = function()
