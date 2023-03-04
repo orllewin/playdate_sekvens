@@ -4,7 +4,6 @@
 		{
 			"name": "Kick 01",
 			"file": "Samples/kick1",
-			"length": 16,
 			"pattern": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		},
 		{

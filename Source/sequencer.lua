@@ -7,38 +7,44 @@
 		"Looks like that does the trick! There's one gotcha: turns out the default voice range _is_ 0-127 (because who would ever use notes outside that?) so you have to extend that in addVoice: `inst:addVoice(snd.synth.new(snd.kWaveSquare), -100, 500, 0) -- 0=no transpose`"
 	]]
 
-class('Sequencer').extends(playdate.graphics.sprite)
+class('Sequencer').extends()
 
 local sound <const> = playdate.sound
 
 local bpm = 120
 local fracMidiNote = -1
 local poSyncEnabled = false
-local poSyncSynth = sound.synth.new(playdate.sound.kWaveSquare)
+local poSyncSynth = nil
 
-local syncChannel = sound.channel.new()
-local syncInstrument = sound.instrument.new()
-local syncTrack = sound.track.new()
+local syncChannel = nil
+local syncInstrument = nil
+local syncTrack = nil
 local syncNotes = {}
 
-local mainChannel = sound.channel.new()
+local mainChannel = nil
 
-local loPassFilter = sound.twopolefilter.new("lopass")
-local hiPassFilter = sound.twopolefilter.new("hipass")
+local loPassFilter = nil
+local hiPassFilter = nil
 local delay1 = nil
 local delay2 = nil
 
 local sequencerTracks = {}
 local noteLengths = {}
-local sequence = sound.sequence.new()
+local sequence = nil
 
 local sequencerFilePath = ""
 
 function Sequencer:init(samplepackFile, onInit)
 	Sequencer.super.init(self)
 	
+	mainChannel = sound.channel.new()
+	syncChannel = sound.channel.new()
+	sequence = sound.sequence.new()
+	syncNotes = {}
+	
 	sequencerFilePath = samplepackFile
-
+	
+	poSyncSynth = sound.synth.new(playdate.sound.kWaveSquare)
 	poSyncSynth:setParameter(1, 0.3)--square wave duty cycle
 	poSyncSynth:setVolume(1)
 	
@@ -48,15 +54,20 @@ function Sequencer:init(samplepackFile, onInit)
 	syncChannel:setPan(-1)--left
 	syncChannel:setVolume(0)
 	
+	syncInstrument = sound.instrument.new()
 	syncChannel:addSource(syncInstrument)
+	syncInstrument = sound.instrument.new()
 	syncInstrument:addVoice(poSyncSynth, -100, 500, 0)--allow sync instrument to operate outside normal midi note range
 
+	syncTrack = sound.track.new()
 	syncTrack:setInstrument(syncInstrument)
 	
+	loPassFilter = sound.twopolefilter.new("lopass")
 	mainChannel:addEffect(loPassFilter)
 	loPassFilter:setMix(0)
 	loPassFilter:setFrequency(10000)
 	
+	hiPassFilter = sound.twopolefilter.new("hipass")
 	mainChannel:addEffect(hiPassFilter)
 	hiPassFilter:setMix(0)
 	hiPassFilter:setFrequency(150)
@@ -132,20 +143,20 @@ function Sequencer:init(samplepackFile, onInit)
 	end
 	
 	--debug, check patterns loaded:
-	--[[
+
 	for i=1,#sequencerTracks do
 		local seqTrack = sequencerTracks[i]
 		print("Track " .. i .. ": " .. self:printPattern(seqTrack.seqPattern))
 	end
-	--]]
-	
+
+	print("init - adding tracks to sequence")
 	for i=1,#sequencerTracks do sequence:addTrack(sequencerTracks[i].seqTrack) end
 	
 	--add invisible track on the end for the clock:
 	sequence:addTrack(syncTrack)
-	
+	print("init - setbpm")
 	self:setBPM(bpm)
-	
+	print("init - done")
 end
 
 function Sequencer:load(trackIndex, sampleName, samplePath, onReady)
@@ -167,10 +178,11 @@ function Sequencer:load(trackIndex, sampleName, samplePath, onReady)
 	
 	sequencerLua.tracks[trackIndex].name = sampleName
 	sequencerLua.tracks[trackIndex].file = samplePath
+	sequencerLua.tracks[trackIndex].length = 8
+	--todo get length and set note length...
 	
-	--todo get length
-	
-	--todo - write file
+	--Write updated sequencer to file:
+	json.encodeToFile(sequencerFilePath, true, sequencerLua)
 	
 	onReady()
 end
@@ -255,26 +267,30 @@ function Sequencer:setTrackMute(track, isMuted)
 end
 
 function Sequencer:setBPM(bpm)
+	print("setting bpm; "..bpm)
 	self.bpm = bpm
 	local stepsPerBeat = 4
 	local beatsPerSecond = bpm / 60
 	local stepsPerSecond = stepsPerBeat * beatsPerSecond
 	sequence:setTempo(stepsPerSecond)
 	
+	print("removing existing sync")
 	if #syncNotes > 0 then
+		print("removing existing sync 2")
 		syncTrack:removeNote(1, fracMidiNote) -- API BUG?
 	end
-
+	print("calculating frac")
 	fracMidiNote = self:bpmToFractionalMidiNote(bpm)
 	local syncNote = {step=1, note=fracMidiNote, length=16}
 	syncNotes = syncTrack:getNotes()
 	syncNotes[1] = syncNote
 	syncTrack:setNotes(syncNotes)
-	
+	print("call delay reset")
 	self:resetDelay()
 end
 
 function Sequencer:resetDelay()
+	print("resetting delay")
 	if delay1 ~= nil then mainChannel:removeEffect(delay1) end
 	if delay2 ~= nil then mainChannel:removeEffect(delay2) end
 	
