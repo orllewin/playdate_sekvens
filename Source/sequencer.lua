@@ -32,8 +32,12 @@ local sequencerTracks = {}
 local noteLengths = {}
 local sequence = sound.sequence.new()
 
+local sequencerFilePath = ""
+
 function Sequencer:init(samplepackFile, onInit)
 	Sequencer.super.init(self)
+	
+	sequencerFilePath = samplepackFile
 
 	poSyncSynth:setParameter(1, 0.3)--square wave duty cycle
 	poSyncSynth:setVolume(1)
@@ -142,6 +146,33 @@ function Sequencer:init(samplepackFile, onInit)
 	
 	self:setBPM(bpm)
 	
+end
+
+function Sequencer:load(trackIndex, sampleName, samplePath, onReady)
+	--Load in current Sequencer JSON
+	if playdate.file.exists(sequencerFilePath) then
+		print("found " .. sequencerFilePath)
+	else
+		print("" .. sequencerFilePath .. " not found")
+	end
+
+	local file = playdate.file.open(sequencerFilePath)
+	local size = playdate.file.getSize(sequencerFilePath)	
+	local sequencerFileData = file:read(size)
+	file:close()
+	
+	print(sequencerFileData)
+
+	local sequencerLua = json.decode(sequencerFileData)
+	
+	sequencerLua.tracks[trackIndex].name = sampleName
+	sequencerLua.tracks[trackIndex].file = samplePath
+	
+	--todo get length
+	
+	--todo - write file
+	
+	onReady()
 end
 
 function Sequencer:updateStep(_track, _step, value)

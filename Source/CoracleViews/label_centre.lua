@@ -39,6 +39,7 @@ function LabelCentre:forceRedraw()
 end
 
 function LabelCentre:setText(text)
+	if text == "" then return end
 	if text == self.text then return end -- only redraw if text has changed
 	self.text = text
 	local nWidth, nHeight = playdate.graphics.getTextSize(self.text)

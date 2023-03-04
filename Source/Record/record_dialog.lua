@@ -99,7 +99,7 @@ function RecordDialog:show(track, onSampleSelected)
 					playdate.file.mkdir("UserRecorded")
 				end
 				buffer:save("UserRecorded/" .. filename .. ".pda")
-				if self.onSampleSelected ~= nil then self.onSampleSelected(self.track, "UserRecorded/" .. filename .. ".pda") end
+				if self.onSampleSelected ~= nil then self.onSampleSelected(self.track, filename, "UserRecorded/" .. filename .. ".pda") end
 				self:dismiss()
 			end
 	end)
@@ -175,8 +175,9 @@ function RecordDialog:getInputHandler()
 				self:startRecording()
 				self.recordPushButton:setOn()	
 			elseif self.sampleList:isFocused() then
-				local selectedSample = "SamplesDefault/" .. selectedCategory .. "/" .. selectedSample
-				if self.onSampleSelected ~= nil then self.onSampleSelected(self.track, selectedSample) end
+				local selectedSamplePath = "SamplesDefault/" .. selectedCategory .. "/" .. selectedSample
+				if self.onSampleSelected ~= nil then self.onSampleSelected(self.track, selectedSample, selectedSamplePath) end
+				self:dismiss()
 			end
 		end,
 		AButtonUp = function()
