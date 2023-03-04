@@ -358,5 +358,7 @@ end
 
 function showRecordDialog()
 	sequencer:stop()
-	recordDialog:show(trackRecordButtons:getCurrentTrack())
+	recordDialog:show(trackRecordButtons:getCurrentTrack(), function(track, samplePath)
+		print("Load sample at " .. samplePath .. " into track " .. track)
+	end)
 end

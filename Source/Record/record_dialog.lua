@@ -19,13 +19,17 @@ local SAMPLE_X = 275
 
 local buffer = playdate.sound.sample.new(3, playdate.sound.kFormat16bitMono)
 local player = playdate.sound.fileplayer.new()
+local samplePlayer = playdate.sound.sampleplayer.new(buffer)
 
 function RecordDialog:init()
 	RecordDialog.super.init(self)
 end
 
-function RecordDialog:show(track)
-	print("Show record dialog")
+function RecordDialog:show(track, onSampleSelected)
+	
+	self.track = track
+	self.onSampleSelected = onSampleSelected
+	
 	playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
 	local background = playdate.graphics.image.new(400, 240, playdate.graphics.kColorBlack)
 	self:moveTo(200, 120)
@@ -37,7 +41,6 @@ function RecordDialog:show(track)
 	
 	self.verticalDiv = DividerVertical(DIV_X, 20, 200, 0.4)
 	self:addDialogSprite(self.verticalDiv)
-	
 	
 	self.bLabel = LabelRight("Dismiss", 290, 225)
 	self:addDialogSprite(self.bLabel)
@@ -71,7 +74,7 @@ function RecordDialog:show(track)
 	end)
 	
 	self.recordPreviewButton = Button("Preview", nil, 60, 130, 75, 30, function ()
-			
+			samplePlayer:play()
 	end)
 	
 	self.sampleLabel = LabelCentre("Sample Name:", 90, 170)
@@ -89,7 +92,12 @@ function RecordDialog:show(track)
 			end
 			
 			playdate.keyboard.keyboardDidHideCallback = function()
-				--todo - save file, show toast
+				--todo - show toast
+				if playdate.file.isdir("UserRecorded") == false then
+					playdate.file.mkdir("UserRecorded")
+				end
+				buffer:save("UserRecorded/" .. filename .. ".pda")
+				if self.onSampleSelected ~= nil then self.onSampleSelected(self.track, "UserRecorded/" .. filename .. ".pda") end
 				self:dismiss()
 			end
 	end)
@@ -131,7 +139,7 @@ function RecordDialog:stopRecording()
 end
 
 function RecordDialog:sampleRecorded()
-	--todo - update ui
+	samplePlayer:setSample(buffer)
 end
 
 function RecordDialog:saveRecording()
@@ -162,8 +170,8 @@ function RecordDialog:getInputHandler()
 			elseif self.recordSaveButton:isFocused() then
 				self.recordSaveButton:tap()
 			elseif self.recordPushButton:isFocused() then
-				self.recordPushButton:setOn()
 				self:startRecording()
+				self.recordPushButton:setOn()	
 			end
 		end,
 		AButtonUp = function()
