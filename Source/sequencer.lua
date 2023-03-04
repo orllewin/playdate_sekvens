@@ -171,14 +171,12 @@ function Sequencer:load(trackIndex, sampleName, samplePath, onReady)
 	local size = playdate.file.getSize(sequencerFilePath)	
 	local sequencerFileData = file:read(size)
 	file:close()
-	
-	print(sequencerFileData)
 
 	local sequencerLua = json.decode(sequencerFileData)
 	
 	sequencerLua.tracks[trackIndex].name = sampleName
 	sequencerLua.tracks[trackIndex].file = samplePath
-	sequencerLua.tracks[trackIndex].length = 8
+	sequencerLua.tracks[trackIndex].length = 16--todo... this loops short samples...
 	--todo get length and set note length...
 	
 	--Write updated sequencer to file:

@@ -71,7 +71,7 @@ function RecordDialog:show(track, onSampleSelected)
 	self.recordNewLabel:setAlpha(0.4)
 	self:addDialogSprite(self.recordNewLabel)
 	
-	self.recordPushButton = Button("Hold A to Record", "Recording", 95, 80, 150, 50, function ()
+	self.recordPushButton = Button("Hold A to Record", "Recording", 95, 55, 170, 35, function ()
 			
 	end)
 	

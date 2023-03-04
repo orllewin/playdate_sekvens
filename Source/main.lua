@@ -358,19 +358,20 @@ end
 
 function showRecordDialog()
 	sequencer:stop()
+	
 	recordDialog:show(trackRecordButtons:getCurrentTrack(), function(track, sampleName, samplePath)
 		print("Load sample at " .. samplePath .. " into track " .. track)
 		footerLabel:setText("Loading sample")
 		sequencer:load(track, sampleName, samplePath, function()
-
+			sequencer = Sequencer("sequencer.json", function(name, tracks)
+				headerLabel:setText(name)
+				print("Loaded samplepack: " .. name .. " containing " .. #tracks .. " tracks")
+				grid:load(tracks)
+				muteTogggle:load(tracks)
+				trackRecordButtons:load(tracks)
+			end)
+			sequencer:play()
 		end)
-		sequencer = Sequencer("sequencer.json", function(name, tracks)
-			headerLabel:setText(name)
-			print("Loaded samplepack: " .. name .. " containing " .. #tracks .. " tracks")
-			grid:load(tracks)
-			muteTogggle:load(tracks)
-			trackRecordButtons:load(tracks)
-		end)
-		sequencer:play()
+		
 	end)
 end

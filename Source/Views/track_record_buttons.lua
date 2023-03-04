@@ -17,9 +17,20 @@ function TrackRecordButtons:init(w, h, x, y, onChange)
 	self:setImage(gridImage)
 	self:moveTo(x + (w/2), y + (h/2))
 	self:add()
+	
+	--Focus caret - placeholder
+	playdate.graphics.setColor(playdate.graphics.kColorWhite)
+	local focusImage = playdate.graphics.image.new(5, 5)
+	self.focusSprite = playdate.graphics.sprite.new(focusImage)
+	self.focusSprite:moveTo(0,0)
+	self.focusSprite:add()
+	self.focusSprite:setVisible(false)
 end
 
 function TrackRecordButtons:load(tracks)
+	
+	self.activeTrack = 1
+	self.activeStep = 1
 	
 	for r=1,#tracks do
 		self.trackNames[r] = tracks[r].name
@@ -37,10 +48,8 @@ function TrackRecordButtons:load(tracks)
 		playdate.graphics.setLineWidth(2)
 		playdate.graphics.drawRoundRect(2, 2, self.cellWidth+4, self.cellHeight+4, 4)
 	playdate.graphics.popContext()
-	self.focusSprite = playdate.graphics.sprite.new(focusImage)
+	self.focusSprite:setImage(focusImage)
 	self.focusSprite:moveTo(self.x - self.w/2 + self.cellWidth/2, self.y - self.h/2 + self.cellHeight/2)
-	self.focusSprite:add()
-	self.focusSprite:setVisible(false)
 	self:drawFocused()
 end
 
